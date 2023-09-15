@@ -1,11 +1,9 @@
-import Welcome from "./welcome/page";
+import Welcome from "./welcome";
 
 export default function Home() {
   return (
     <main className="">
-      <div className="">
-      <Welcome/>
-      </div>
+<Welcome/>
     </main>
   )
 }

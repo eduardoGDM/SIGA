@@ -1,12 +1,11 @@
 export default function General() {
-
     return(
-
+        
         <div className="bg-[#ffff] h-screen ">
             <div className="flex">
             <img className="p-[6%] scale-25" src="interview.svg"/>
             <div className="flex flex-col py-[10%] font-bold">
-                  <h1 className="text-[#251B45] text-2xl ">Olá,Juliano Lavandoski</h1>
+                  <h1 className="text-[#251B45] text-3xl ">Olá,Juliano Lavandoski</h1>
                     <span className="text-[#828282] py-[2%]">Resumo Geral do seu gerenciamento na instituição</span>
                         <button type="button" disabled className="text-[#828282] font-bold bg-[#D9D9D9] rounded-lg px-[10%]text-center inline-flex items-center mr-10 mb-2">
                             <img className="w-6 h-6 mr-2 whitespace-nowrap" src="school 2.svg" />Colégio Estadual Cívico-Militar General Antônio Sampaio</button>
