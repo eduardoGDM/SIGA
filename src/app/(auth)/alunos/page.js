@@ -1,29 +1,19 @@
 "use client";
 import Link from "next/link";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { database } from "../../services/firebase";
 
 export default function Aluno() {
+	const [dados, setDados] = useState([]);
+	console.log(dados);
 	useEffect(() => {
 		const ref = database.ref("aluno");
 		ref.on("value", function (snapshot) {
-			snapshot.forEach(function (element) {
-				const { nome } = element.val();
-				const { serie } = element.val();
-				const { telefone } = element.val();
-				const { nascimento } = element.val();
-				console.log(nome, serie, telefone, nascimento);
-			});
+			setDados(snapshot.val());
 		});
 	}, [database]);
 
-	// 	// Atualize o estado com os dados
-	// 	query.onData((snapshot) => {
-	// 		setDados(snapshot.val());
-	// 	});
-	// }, []);
-
-	const Dados = [
+	const x = [
 		{
 			nome: "Eduardo",
 			serie: "5 serie/manhã",
@@ -74,28 +64,7 @@ export default function Aluno() {
 							<span>Telefone</span>
 							<span>Nascimento</span>
 						</div>
-						{Dados.map((dados, index) => (
-							<div className="">
-								<li
-									key={index}
-									className="bg-slate-400 text-sm grid grid-cols-5 gap-x-[0%] py-[1%] px-[1%] whitespace-nowrap">
-									<span className="">{dados.nome}</span>
-									<span className="">{dados.serie}</span>
-									<span className="">{dados.telefone}</span>
-									<span className="">{dados.nascimento}</span>
-									<div className="flex px-[40%]">
-										<img
-											className="mr-2 cursor-pointer"
-											src={`/${dados.icon}.svg`}
-										/>
-										<img
-											className="cursor-pointer"
-											src={`/${dados.icon2}.svg`}
-										/>
-									</div>
-								</li>
-							</div>
-						))}
+						<div></div>
 					</ul>
 				</div>
 			</div>
