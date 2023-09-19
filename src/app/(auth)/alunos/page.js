@@ -1,56 +1,81 @@
-import Link from "next/link"
-import { Fragment } from "react"
+"use client";
+import { db } from "@/services/firebaseConfig";
+import { onValue, ref } from "firebase/database";
+import Link from "next/link";
+import { Fragment, useEffect, useState } from "react";
+export default function Aluno() {
+	const [dados, setDados] = useState([]);
 
-export default function Aluno(){
+	console.log("useState objeto", dados);
 
-    const Dados = [
-        {nome:"Eduardo",serie:"5 serie/manhã",telefone:"(42)99952-8965",nascimento:"14/03/2006",icon:"edit",icon2:"relatorio"},
-        {nome:"JUJU",serie:"5 serie/manhã",telefone:"(42)99952-0000",nascimento:"14/03/2003",icon:"edit",icon2:"relatorio"},
-    ]
-    return(
-            <Fragment>
-        <div className="p-[4%] w-screen">
-            <div className="">
-            <h1 className="text-[#251B45] font-bold text-4xl whitespace-nowrap ">Gerenciamento De Alunos</h1>
-             <span className="text-[#828282] whitespace-nowrap">Adicione e edite os alunos da instituição de ensino</span>
-             <div className="py-[2%]">
-              <Link href="/cadastroAluno"><button type="button" className="text-[#251B45] bg-[#0CCA98] rounded-lg text-1xl px-2 py-2 text-center inline-flex items-center mr-2 mb-2">+ Cadastrar Aluno</button>
-</Link>
-                           <input type="text" id="instituicao" className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mt-[2%]" placeholder="Pesquisar aluno..."></input>
-                           </div>
-                           
-         </div>
-         <div> 
-          <ul className="">
-          <div className=" text-[#FBFAFC] grid grid-cols-6 gap-x-[20%] border rounded-t-lg bg-[#251B45] px-[1%] "  >
-              <span>Nome</span> 
-              <span>Série/Turno</span>
-              <span>Telefone</span>
-              <span>Nascimento</span>
-          </div>
-          {Dados.map((dados,index)=>(
-            <div className="">
-              <li key={index} className="bg-slate-400 text-sm grid grid-cols-5 gap-x-[0%] py-[1%] px-[1%] whitespace-nowrap">
-                      <span className="">{dados.nome}</span>
-                      <span className="">{dados.serie}</span>
-                      <span className="">{dados.telefone}</span>
-                      <span className="">{dados.nascimento}</span>
-                      <div className="flex px-[40%]">
-                      <img className="mr-2 cursor-pointer" src={`/${dados.icon}.svg`} /> 
-                      <img className="cursor-pointer" src={`/${dados.icon2}.svg`} /> 
-                      </div>
-                      
+	useEffect(() => {
+		const dbRef = ref(db, "aluno");
 
+		onValue(dbRef, (snapshot) => {
+			const data = snapshot.val();
+			if (data) {
+				const dadosArray = Object.values(data);
+				setDados(dadosArray);
+			} else {
+				// Handle the case when there's no data
+				setDados([]);
+			}
+		});
+	}, []); // O segundo argumento vazio [] indica que este efeito deve ser executado apenas uma vez, quando o componente é montado
 
-              </li>
-              </div>
-          ))}
-      </ul>
-      </div>
-        </div>
-          
-      
-      </Fragment>
+	console.log("Estado de dados", dados);
 
-    )
+	return (
+		<Fragment>
+			<div className="p-[4%] w-screen">
+				<div className="">
+					<h1 className="text-[#251B45] font-bold text-4xl whitespace-nowrap ">
+						Gerenciamento De Alunos
+					</h1>
+					<span className="text-[#828282] whitespace-nowrap">
+						Adicione e edite os alunos da instituição de ensino
+					</span>
+					<div className="py-[2%]">
+						<Link href="/cadastroAluno">
+							<button
+								type="button"
+								className="text-[#251B45] bg-[#0CCA98] rounded-lg text-1xl px-2 py-2 text-center inline-flex items-center mr-2 mb-2">
+								+ Cadastrar Aluno
+							</button>
+						</Link>
+						<input
+							type="text"
+							id="instituicao"
+							className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mt-[2%]"
+							placeholder="Pesquisar aluno..."></input>
+					</div>
+				</div>
+
+				<div>
+					<table className="table-auto w-full">
+						<thead>
+							<tr className=" grid grid-cols-8  gap-x-[17%] bg-[#251B45] text-[#FBFAFC]  ">
+								<th className="">Nome</th>
+								<th>Série/Turno</th>
+								<th>Telefone</th>
+								<th className="">Nascimento</th>
+							</tr>
+						</thead>
+						<tbody className="bg-[#0CCA98] ">
+							{dados.map((aluno) => (
+								<tr className=" grid grid-cols-6 border-b-4" key={aluno.id}>
+									<td className="">{aluno.nome}</td>
+									<td>{aluno.turno}</td>
+									<td>{aluno.telefone}</td>
+									<td>{aluno.nascimento}</td>
+									<img className="bg-blue cursor-pointer" src="edit.svg"></img>
+									<img className="cursor-pointer " src="docs.svg"></img>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</Fragment>
+	);
 }

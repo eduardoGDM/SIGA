@@ -1,9 +1,11 @@
-import Welcome from "./welcome";
+export const useClient = true;
+import Inicio from "./home/page.js";
 
 export default function Home() {
   return (
     <main className="">
-<Welcome/>
+<Inicio/>
     </main>
   )
+
 }
