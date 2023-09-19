@@ -1,36 +1,20 @@
 "use client";
+import { database } from "@/app/services/firebase";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
-import { database } from "../../services/firebase";
 
 export default function Aluno() {
 	const [dados, setDados] = useState([]);
-	console.log(dados);
+
+	console.log("useState objeto", dados);
 	useEffect(() => {
 		const ref = database.ref("aluno");
 		ref.on("value", function (snapshot) {
-			setDados(snapshot.val());
+			const dadosArray = Object.values(snapshot.val());
+			setDados(dadosArray);
 		});
-	}, [database]);
+	}, []);
 
-	const x = [
-		{
-			nome: "Eduardo",
-			serie: "5 serie/manhã",
-			telefone: "(42)99952-8965",
-			nascimento: "14/03/2006",
-			icon: "edit",
-			icon2: "relatorio",
-		},
-		{
-			nome: "JUJU",
-			serie: "5 serie/manhã",
-			telefone: "(42)99952-0000",
-			nascimento: "14/03/2003",
-			icon: "edit",
-			icon2: "relatorio",
-		},
-	];
 	return (
 		<Fragment>
 			<div className="p-[4%] w-screen">
@@ -56,16 +40,30 @@ export default function Aluno() {
 							placeholder="Pesquisar aluno..."></input>
 					</div>
 				</div>
+
 				<div>
-					<ul className="">
-						<div className=" text-[#FBFAFC] grid grid-cols-6 gap-x-[20%] border rounded-t-lg bg-[#251B45] px-[1%] ">
-							<span>Nome</span>
-							<span>Série/Turno</span>
-							<span>Telefone</span>
-							<span>Nascimento</span>
-						</div>
-						<div></div>
-					</ul>
+					<table className="table-auto w-full">
+						<thead>
+							<tr className=" grid grid-cols-8  gap-x-[17%] bg-[#251B45] text-[#FBFAFC]  ">
+								<th className="">Nome</th>
+								<th>Série/Turno</th>
+								<th>Telefone</th>
+								<th className="">Nascimento</th>
+							</tr>
+						</thead>
+						<tbody className="bg-[#0CCA98] ">
+							{dados.map((aluno) => (
+								<tr className=" grid grid-cols-6 border-b-4" key={aluno.id}>
+									<td className="">{aluno.nome}</td>
+									<td>{aluno.turno}</td>
+									<td>{aluno.telefone}</td>
+									<td>{aluno.nascimento}</td>
+									<img className="bg-blue cursor-pointer" src="edit.svg"></img>
+									<img className="cursor-pointer " src="docs.svg"></img>
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</Fragment>

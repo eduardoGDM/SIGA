@@ -6,8 +6,8 @@ export default function sideBar() {
 	const Menu = [
 		{ title: "Dashboard", src: "quadradino", link: "/general" },
 		{ title: "Gerenciar Alunos", src: "chapeuzinho", link: "/alunos" },
-		{ title: "Gerenciar Relatórios", src: "/", link: "criarRelatorio" },
-		{ title: "FAQ", src: "question", link: "/faq" },
+		{ title: "Gerenciar Relatórios", src: "docs", link: "relatorios" },
+		{ title: "FAQ", src: "question", link: "faq" },
 		{ user: "Juliano Lavandoski", src: "bonequinho" },
 	];
 
@@ -25,7 +25,7 @@ export default function sideBar() {
 					<img
 						onClick={() => setOpen(!open)}
 						src="next.svg"
-						className={`absolute cursor-pointer right-3 top-[8%] w-7 ${
+						className={`absolute cursor-pointer right-0 top-[8%] w-7 ${
 							!open && "rotate-180"
 						}`}
 					/>
