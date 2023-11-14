@@ -5,6 +5,7 @@ import "firebase/database";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 
+
 const firebaseConfig = {
 	apiKey: "AIzaSyCLd6BGo6Z9Pp0uGt5QYVMrAwbhATkeyrU",
 	authDomain: "siga-software.firebaseapp.com",
@@ -23,5 +24,10 @@ const analytics = getAnalytics(app);
 const db = getDatabase(app);
 const storage = getStorage(app);
 export { analytics, app, auth, db, storage };
+    
+// initialize firebase
+    
+// export
+// initialize this way ^^^
 
 // Initialize Firebase

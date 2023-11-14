@@ -6,6 +6,8 @@ import { useState } from "react";
 
 const Swal = require("sweetalert2");
 
+
+
 export default function CadastroAluno() {
 	function gravar(event) {
 		event.preventDefault();
@@ -29,6 +31,7 @@ export default function CadastroAluno() {
 			denyButtonText: `Não Salvar`,
 		}).then((result) => {
 			if (result.isConfirmed) {
+				alunoId = nome
 				const dbRef = ref(db, "aluno");
 				const novoRegistroRef = push(dbRef); // Crie uma nova referência com um ID único gerado pelo Firebase
 				set(novoRegistroRef, dados) // Use set na nova referência para definir os dados

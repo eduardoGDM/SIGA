@@ -54,23 +54,26 @@ export default function Aluno() {
 				<div>
 					<table className="table-auto w-full">
 						<thead>
-							<tr className=" grid grid-cols-8  gap-x-[17%] bg-[#251B45] text-[#FBFAFC]  ">
+							<a className=" grid grid-cols-8  gap-x-[17%] bg-[#251B45] text-[#FBFAFC]  rounded-t-lg  ">
 								<th className="">Nome</th>
 								<th>Série/Turno</th>
 								<th>Telefone</th>
 								<th className="">Nascimento</th>
-							</tr>
+							</a>
 						</thead>
 						<tbody className="bg-[#0CCA98] ">
 							{dados.map((aluno) => (
-								<tr className=" grid grid-cols-6 border-b-4" key={aluno.id}>
+								<td className=" grid grid-cols-6 border-b-2" key={aluno.id}>
 									<td className="">{aluno.nome}</td>
 									<td>{aluno.turno}</td>
 									<td>{aluno.telefone}</td>
 									<td>{aluno.nascimento}</td>
+
 									<img className="bg-blue cursor-pointer" src="edit.svg"></img>
-									<img className="cursor-pointer " src="docs.svg"></img>
-								</tr>
+									<Link href="/cadasaoRelatorios">
+										<img className="cursor-pointer " src="docs.svg"></img>
+									</Link>
+								</td>
 							))}
 						</tbody>
 					</table>

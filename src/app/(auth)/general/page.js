@@ -1,35 +1,51 @@
 "use client";
+import { auth, database } from "@/services/firebaseConfig";
+import { useEffect, useState } from "react";
 
 export default function General() {
-	// const [initialized, setInitialized] = useState(false);
-	// const [user, setUser] = useState(null);
+	const [user, setUser] = useState({ isLoading: true });
+	const [nome, setNome] = useState("");
 
-	// useEffect(() => {
-	// 	// Inicializar o Firebase
+	useEffect(() => {
+		const isUserLoggedIn = auth.currentUser != null;
 
-	// 	// Verificar se o usuário está autenticado
-	// 	const user = auth.currentUser;
+		if (isUserLoggedIn) {
+			const fetchUser = async () => {
+				const currentUser = auth.currentUser;
 
-	// 	// Se o usuário estiver autenticado, salvar o nome dele no estado
-	// 	if (user) {
-	// 		setUser(user.displayName);
-	// 	}
+				if (currentUser) {
+					const uid = currentUser.uid;
+					const userRef = database.ref(`professor/${uid}`);
+					userRef.on("value", (snapshot) => {
+						const userData = snapshot.val();
+						setUser({ ...currentUser, ...userData });
+					});
 
-	// 	// Definir o estado initialized como verdadeiro
-	// 	setInitialized(true);
-	// }, []);
+					// pega no banco
+					const nomeSnapshot = await database
+						.ref(`professor/${uid}/nome`)
+						.once("value");
 
-	// // Renderizar o componente General apenas se o Firebase estiver inicializado e o usuário estiver autenticado
-	// if (!initialized || !user) {
-	// 	return null;
-	// }
+					const nome = Object.val(nomeSnapshot);
+					console.log("console.asdasdads:::", nome);
+					setNome(nome);
+				} else {
+					// um null so pra ter
+				}
+			};
+
+			fetchUser();
+		}
+	}, []);
+
+	// Conditional rendering based on isUserLoggedIn
 
 	return (
 		<div className="bg-[#ffff] h-screen ">
 			<div className="flex">
 				<img className="p-[6%] scale-25" src="interview.svg" />
 				<div className="flex flex-col py-[10%] font-bold">
-					<h1 className="text-[#251B45] text-3xl ">Olá, Usuario</h1>
+					<h1 className="text-[#251B45] text-3xl ">Olá, {user.nome}</h1>
 					<span className="text-[#828282] py-[2%]">
 						Resumo Geral do seu gerenciamento na instituição
 					</span>
