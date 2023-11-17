@@ -1,34 +1,49 @@
 "use client";
-import { db } from "@/services/firebaseConfig";
-import { onValue, ref } from "firebase/database";
-import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
-export default function Aluno() {
-	const [dados, setDados] = useState([]);
 
-	console.log("useState objeto", dados);
+import {
+	getDocs
+} from "firebase/firestore";
+import { Fragment, useEffect, useState } from "react";
+
+export default function Aluno() {
+	const [users, setUsers] = useState([]);
+	const usersCollectionRef = collection(db, "aluno");
 
 	useEffect(() => {
-		const dbRef = ref(db, "aluno");
-
-		onValue(dbRef, (snapshot) => {
-			const data = snapshot.val();
-			if (data) {
-				const dadosArray = Object.values(data);
-				setDados(dadosArray);
-			} else {
-				// Handle the case when there's no data
-				setDados([]);
-			}
-		});
-	}, []); // O segundo argumento vazio [] indica que este efeito deve ser executado apenas uma vez, quando o componente é montado
-
-	console.log("Estado de dados", dados);
-
+		const getUsers = async () => {
+		  const data = await getDocs(usersCollectionRef);
+		  setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+		};
+	
+		getUsers();
+	  }, []);
+  
 	return (
 		<Fragment>
 			<div className="p-[4%] w-screen">
-				<div className="">
+			{users.map((user) => {
+			return <div> 
+			  {" "}
+			  <span>ALunos Cadastrados</span>
+			  <h1>Name: {user.nome}</h1>
+			  <h1>Idade: {user.idade}</h1>
+			  <h1>Matricula: {user.matricula}</h1>
+			  <h1>Telefone: {user.telefone}</h1>
+			  <h1>Serie: {user.serie} ª</h1>
+			  <h1>Mae: {user.mae}</h1>
+			  <h1>Pai: {user.pai}</h1>
+			  {/* <button onClick={() => {
+				updateUser(user.id, user.age);
+			  }}>Increase </button> */}
+			</div>
+		  })}
+			</div>
+		</Fragment>
+	);
+}
+
+
+{/* <div className="">
 					<h1 className="text-[#251B45] font-bold text-4xl whitespace-nowrap ">
 						Gerenciamento De Alunos
 					</h1>
@@ -77,8 +92,4 @@ export default function Aluno() {
 							))}
 						</tbody>
 					</table>
-				</div>
-			</div>
-		</Fragment>
-	);
-}
+				</div> */}

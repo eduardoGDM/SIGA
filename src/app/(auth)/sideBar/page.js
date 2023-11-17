@@ -5,8 +5,8 @@ import { Fragment, useState } from "react";
 export default function sideBar() {
 	const Menu = [
 		{ title: "Dashboard", src: "quadradino", link: "/general" },
-		{ title: "Gerenciar Alunos", src: "chapeuzinho", link: "/alunos" },
-		{ title: "Gerenciar Relatórios", src: "docs", link: "/relatorios" },
+		{ title: "Gerenciar Alunos", src: "chapeuzinho", link: "/cadastroAluno" },
+		{ title: "Gerenciar Relatórios", src: "docs", link: "/cadastroRelatorios" },
 		{ title: "FAQ", src: "question", link: "faq" },
 		{ user: "Juliano Lavandoski", src: "bonequinho" },
 	];
