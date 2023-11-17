@@ -1,181 +1,204 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { db } from "@/services/firebaseConfig";
 import {
-  collection,
-  getDocs,
   addDoc,
-  updateDoc,
-  doc,
+  collection,
   deleteDoc,
+  doc,
+  getDocs,
 } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
+const initialFormData = { title: "", topic: "" };
 export default function cadastroRelatorio() {
-  const [newName, setNewName] = useState("");
-  const [newAge, setNewAge] = useState(0);
-  const [users, setUsers] = useState([]);
-  const usersColletctionRef = collection(db, "relatorio");
+  const [newTituloGeral, setNewTituloGeral] = useState("");
+  const [newTitulo, setNewTitulo] = useState("");
+  const [newTopico, setNewTopico] = useState("");
+  const [relatorios, setRelatorio] = useState([]);
+  const relatorioCollectionRef = collection(db, "relatorio");
 
-  const createUser = async () => {
-    await addDoc(usersColletctionRef, { titulo: newName, topico: newAge });
+  const [formData, setFormData] = useState(initialFormData);
+  const [topics, setTopics] = useState([]);
+
+  const Swal = require("sweetalert2");
+
+  const [inputs, setInputs] = useState([{ id: 0, text: "" }]);
+
+  const createRelatorio = async (event) => {
+    event.preventDefault();
+    await addDoc(relatorioCollectionRef, {
+      tituloGeral: newTituloGeral,
+      titulo: newTitulo,
+      topico: newTopico,
+    });
+    Swal.fire({
+      title: "Sucesso!!!",
+      text: "Relatório Cadastrado",
+      icon: "success",
+    });
+
+    setTimeout(function () {
+      location.reload();
+    }, 2000);
   };
+  //  const updateRelatorio = async (id,aluno,nome) => {
+  //    const relatorioDoc = doc(db, "relatorio", id);
 
-  const updateUser = async (id, age) => {
-    const userDoc = doc(db, "users", id);
-    const newFields = { topico: age + 1 };
-    await updateDoc(userDoc, newFields);
+  //  await updateDoc(realtorioDoc, setNewNome);
+  //  };
+  const deleteRelatorio = async (id) => {
+    const relatorioDoc = doc(db, "relatorio", id);
+    await deleteDoc(relatorioDoc);
+    Swal.fire({
+      icon: "error",
+      title: "Relatório Deletado",
+      text: "Os dados foram deletados com sucesso",
+    });
+    setTimeout(function () {
+      location.reload();
+    }, 1000);
   };
-
-  const deleteUser = async (id) => {
-    const userDoc = doc(db, "users", id);
-    await deleteDoc(userDoc);
-  };
-
   useEffect(() => {
-    const getUsers = async () => {
-      const data = await getDocs(usersColletctionRef);
-      setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    const getRelatorio = async () => {
+      const data = await getDocs(relatorioCollectionRef);
+      setRelatorio(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
-    getUsers();
+    getRelatorio();
   }, []);
-  return (
-    <div className="App">
-      <input
-        placeholder="Name"
-        onChange={(event) => {
-          setNewName(event.target.value);
-        }}
-      />
-      <input
-        type="text"
-        placeholder="Age"
-        onChange={(event) => {
-          setNewAge(event.target.value);
-        }}
-      />
 
-      <button onClick={createUser}> Create User </button>
-      {users.map((user) => {
+  ///text area
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleAddTopic = () => {
+    if (formData.title.trim() === "" || formData.topic.trim() === "") return;
+    setTopics([...topics, formData]);
+    setFormData(initialFormData);
+  };
+
+  const handleRemoveTopic = (index) => {
+    const newTopics = [...topics];
+    newTopics.splice(index, 1);
+    setTopics(newTopics);
+  };
+
+  const handleSave = () => {
+    const topicsArray = topics.map((topic, index) => ({
+      [`${index}`]: { title: topic.title, topic: topic.topic },
+    }));
+    Swal.fire({
+      title: "Sucesso!!!",
+      text: "Topico salvo Cadastrado",
+      icon: "success",
+    });
+    console.log(topicsArray);
+  };
+
+  return (
+    <div className="pl-[4%] pt-[4%]">
+      <div className="flex flex-wrap pt-[3%] px-[2%]">
+        <img
+          className="bg-[#D9D9D9] rounded-full p-[7%]"
+          src="bonequinho.svg"
+        />
+        <div>
+          <h1 className="text-[rgb(37,27,69)] font-bold text-3xl ">Jujuba</h1>
+          <span className="text-[#828282] whitespace-nowrap text-1xl">
+            Visualize e edite as informações sobre o aluno
+          </span>
+        </div>
+      </div>
+      <div>
+        <button
+          className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2"
+          onClick={handleAddTopic}
+        >
+          {" "}
+          Adicionar Topico{" "}
+        </button>
+        <button
+          className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2"
+          onClick={handleSave}
+        >
+          {" "}
+          Salvar Topico{" "}
+        </button>
+      </div>
+      {/* <span>Título do Relatório:</span>
+		  <input  className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" placeholder="Titulo do Documento" value={newTituloGeral} onChange={(event) => {setNewTituloGeral(event.target.value)}} />
+		  <span>Título do Tópico:</span>	
+		  <input className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" type="text" value={newTitulo}  placeholder="Titulo do Tópico" onChange={(event) => {setNewTitulo(event.target.value)}}/>
+		  <span>Tópico:</span>
+      <textarea className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" type="text" value={newTopico}  placeholder="Tópico" onChange={(event) => {setNewTopico(event.target.value)}}></textarea>
+     <div className="">
+      <button  className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2" onClick={createRelatorio}> Salvar Relatorio </button>
+      <div> 
+        */}
+
+      {relatorios.map((relatorio) => {
         return (
           <div>
             {" "}
-            <h1>Name: {user.titulo}</h1>
-            <h1>Age: {user.topico}</h1>
+            <h1>Titulo Geral: {relatorio.tituloGeral}</h1>
+            <h1>Titulo: {relatorio.titulo}</h1>
+            <h1>topico: {relatorio.topico}</h1>
+            {/* <button onClick={() => {
+            updateUser(relatorio.id, relatorio.age);
+          }}>Increase </button> */}
             <button
+              className="pl-2"
               onClick={() => {
-                updateUser(user.id, user.topico);
+                deleteRelatorio(relatorio.id);
               }}
             >
-              Increase Age
-            </button>
-            <button
-              onClick={() => {
-                deleteUser(user.id);
-              }}
-            >
-              Delete User
+              Delete{" "}
             </button>
           </div>
         );
       })}
+      <div>
+        <div>
+          <span>Titulos:</span>
+
+          <div className="flex ">
+            <input
+              className="  w-[600px] text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Title"
+            />
+          </div>
+          <span>Topicos:</span>
+          <div className="">
+            <textarea
+              className=" h-[200px] w-[600px] rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
+              name="topic"
+              value={formData.topic}
+              onChange={handleChange}
+              placeholder="Topic"
+            ></textarea>
+          </div>
+        </div>
+
+        {topics.map((topic, index, title) => (
+          <div key={index}>
+            <button
+              className="text-white font-bold bg-[#ca0c0c] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2"
+              onClick={() => handleRemoveTopic(index)}
+            >
+              Remover topico: [ {index + 1} ] titulo: [ {topic.title} ] e
+              topico: [ {topic.topic} ]{" "}
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
-//   return (
-//     <div className="p-[4%] w-screen">
-//       <div className="">
-//         <h1 className="text-[#251B45] font-bold text-4xl whitespace-nowrap ">
-//           Gerenciamento de Relatórios
-//         </h1>
-//         <span className="text-[#828282] whitespace-nowrap">
-//           Crie, edite e visualize todos os relatórios já iniciados
-//         </span>
-//         <div className="py-[2%]">
-//           <ButtonModal />
-//           <Link href="textArea">
-//             <button
-//               type="button"
-//               className="text-[#FBFAFC] bg-[#CA0C0C] rounded-lg text-1xl px-2 py-2 text-center inline-flex items-center mr-2 mb-2"
-//             >
-//               <img className="w-6 h-6 mr-2" src="bin 2.svg" />
-//               Excluir Relatório
-//             </button>
-//           </Link>
-
-//           <div>
-//             <div className="flex">
-//               <div>
-//                 <img
-//                   className="bg-[#D9D9D9]  p-[0.5%] rounded-l-lg"
-//                   src="bonequinho.svg"
-//                 ></img>
-//                 <span className="bg-[#D9D9D9]  p-[1%]">
-//                   <span>Aluno:</span>
-//                   Eduardo Goncalves
-//                 </span>
-//                 <span className="bg-[#828282] rounded-r-lg p-[1%]">
-//                   Matricula:1234
-//                 </span>
-//               </div>
-//             </div>
-//             <div className=" mt-[5%]">
-//               <h1>Tópicos Relacionados</h1>
-//               {relatorios.map((relatorio) => (
-//                 <tr className=" grid grid-cols-6 border-b-2 bg-slate-500">
-//                   <a className="">{relatorio.titulo}</a>
-//                   <a>{relatorio.topico}</a>
-//                   <a>Editar</a>
-//                   <a onClick={deletar()}>Excluir</a>
-//                 </tr>
-//               ))}
-//             </div>
-//             <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-//               + Tópico
-//             </button>
-//           </div>
-//           <div>
-//             {/* Topicos começa aqui */}
-//             <div>
-//               <form onSubmit={writeUserData}>
-//                 <div className="grid grid-rows-4">
-//                   <input
-//                     type="text"
-//                     placeholder="Titulo"
-//                     value={titulo}
-//                     onChange={(event) => setTitulo(event.target.value)}
-//                   ></input>
-//                   <textarea
-//                     placeholder="Tópico"
-//                     value={topico}
-//                     onChange={(event) => setTopico(event.target.value)}
-//                   ></textarea>
-//                 </div>
-//                 <button
-//                   className="text-white font-bo
-// 									ld bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2"
-//                   type="submit"
-//                 >
-//                   <img className="w-6 h-6 mr-2" src="diskette 2.svg" />
-//                   Salvar relatório
-//                 </button>
-//               </form>
-//             </div>
-//             {/* Topicos termina aqui */}
-//             <div className="flex justify-end py-[0%]">
-//               <button
-//                 className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2"
-//                 type="submit"
-//               >
-//                 <img className="w-6 h-6 mr-2" src="pdf-file 6.svg" />
-//                 Salvar relatório e emitir PDF
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
