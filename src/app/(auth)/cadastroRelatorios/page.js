@@ -1,206 +1,108 @@
 "use client";
 
 import { db } from "@/services/firebaseConfig";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs
-} from "firebase/firestore";
-import { useEffect, useState } from "react";
-
-  
-const initialFormData = { title: '', topic: '' };
-export default function cadastroRelatorio() {
-  const [newTituloGeral, setNewTituloGeral] = useState("");
-  const [newTitulo, setNewTitulo] = useState("");
-  const [newTopico,setNewTopico] = useState("")
-  const [relatorios, setRelatorio] = useState([]);
-  const relatorioCollectionRef = collection(db, "relatorio")
+import { collection, doc, setDoc } from "firebase/firestore";
 
 
-  const [formData, setFormData] = useState(initialFormData);
-  const [topics, setTopics] = useState([]);
+import { useState } from 'react';
+function App() {
+ const [relatorios, setRelatorios] = useState([]);
+ const [titulo, setTitulo] = useState('');
+ const [topico, setTopico] = useState('');
+ const [editingIndex, setEditingIndex] = useState(null);
 
-  const Swal = require("sweetalert2");
-
-  const [inputs, setInputs] = useState([{ id: 0, text: '' }]);
-
-
-
-
-
-
-
-  
-  const createRelatorio = async (event) => {
-		event.preventDefault()
-	  await addDoc(relatorioCollectionRef, { tituloGeral: newTituloGeral, titulo:newTitulo, topico:newTopico});
-	  Swal.fire({
-		title: "Sucesso!!!",
-		text: "Relatório Cadastrado",
-		icon: "success"
-	  });
-	
-	  setTimeout(function() { location. reload(); }, 2000)
-	};
-	//  const updateRelatorio = async (id,aluno,nome) => {
-	//    const relatorioDoc = doc(db, "relatorio", id);
-	  
-	//  await updateDoc(realtorioDoc, setNewNome);
-	//  };
-	const deleteRelatorio = async (id) => {
-	  const relatorioDoc = doc(db, "relatorio", id);
-	  await deleteDoc(relatorioDoc);
-	  Swal.fire({
-		icon: "error",
-		title: "Relatório Deletado",
-		text: "Os dados foram deletados com sucesso",
-	  });
-	  setTimeout(function() { location. reload(); }, 1000)
-	};
-	useEffect(() => {
-	  const getRelatorio = async () => {
-		const data = await getDocs(relatorioCollectionRef);
-		setRelatorio(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-	  };
-	  
-	  getRelatorio();
-	  
-	}, []);
-
-
-///text area
-
-
-
-
-
- const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+ const handleSubmit = (e) => {
+    e.preventDefault();
+    if (editingIndex !== null) {
+      const newArray = [...relatorios];
+      newArray[editingIndex] = { titulo, topico };
+      setRelatorios(newArray);
+      setEditingIndex(null);
+    } else {
+      setRelatorios([...relatorios, { titulo, topico }]);
+    }
+    setTitulo('');
+    setTopico('');
  };
 
- const handleAddTopic = () => {
-    if (formData.title.trim() === '' || formData.topic.trim() === '') return;
-    setTopics([...topics, formData]);
-    setFormData(initialFormData);
+ const handleEdit = (index) => {
+    setTitulo(relatorios[index].titulo);
+    setTopico(relatorios[index].topico);
+    setEditingIndex(index);
  };
 
- const handleRemoveTopic = (index) => {
-    const newTopics = [...topics];
-    newTopics.splice(index, 1);
-    setTopics(newTopics);
+ const handleDelete = (index) => {
+    const newArray = [...relatorios];
+    newArray.splice(index, 1);
+    setRelatorios(newArray);
  };
 
- const handleSave = () => {
-    const topicsArray = topics.map((topic, index) => ({
-      [`${index}`]: { title: topic.title, topic: topic.topic },
-      
-    }));
-    Swal.fire({
-      title: "Sucesso!!!",
-      text: "Topico salvo Cadastrado",
-      icon: "success"
-      });
-    console.log(topicsArray);
- };
+ const saveRelatorios = async () => {
+   try {
+      const relatoriosRef = collection(db, "relatorios");
+      const newDocumentRef = doc(relatoriosRef);
+      const relatoriosObject = { relatorios };
+      await setDoc(newDocumentRef, relatoriosObject);
+      console.log("Dados salvos com sucesso!");
+   } catch (error) {
+      console.error("Erro ao salvar dados: ", error);
+   }
+  };
 
-    
-
-
-
-
-  
-  
-  return (
-    <div className="pl-[4%] pt-[4%]">
-      <div className="flex flex-wrap pt-[3%] px-[2%]">
-			<img
- 						className="bg-[#D9D9D9] rounded-full p-[7%]"
- 						src="bonequinho.svg"
-				/>
-				<div>
-				<h1 className="text-[rgb(37,27,69)] font-bold text-3xl ">Jujuba</h1>
-					<span className="text-[#828282] whitespace-nowrap text-1xl">
-							Visualize e edite as informações sobre o aluno
-					</span>
-					</div>
-          
-        	</div>
-          <div>
-          <button className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2" onClick={handleAddTopic}> Adicionar Topico </button>
-          <button className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2" onClick={handleSave}> Salvar Topico </button>
-          </div>
-       {/* <span>Título do Relatório:</span>
-		  <input  className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" placeholder="Titulo do Documento" value={newTituloGeral} onChange={(event) => {setNewTituloGeral(event.target.value)}} />
-		  <span>Título do Tópico:</span>	
-		  <input className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" type="text" value={newTitulo}  placeholder="Titulo do Tópico" onChange={(event) => {setNewTitulo(event.target.value)}}/>
-		  <span>Tópico:</span>
-      <textarea className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" type="text" value={newTopico}  placeholder="Tópico" onChange={(event) => {setNewTopico(event.target.value)}}></textarea>
-     <div className="">
-      <button  className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2" onClick={createRelatorio}> Salvar Relatorio </button>
-      <div> 
-        */}
-
-     
-    
-     
-      {relatorios.map((relatorio) => {
-        return <div> 
-          {" "}
-          <h1>Titulo Geral: {relatorio.tituloGeral}</h1>
-          <h1>Titulo: {relatorio.titulo}</h1>
-          <h1>topico: {relatorio.topico}</h1> 
-          {/* <button onClick={() => {
-            updateUser(relatorio.id, relatorio.age);
-          }}>Increase </button> */}
-          <button className="pl-2" onClick={() => {deleteRelatorio(relatorio.id)}}>Delete </button>
-        </div>
-      })}
+ console.log(relatorios)
+ return (
+    <div className="pl-[3%] pt-[2%]">
       <div>
-      <div>
-      <span>Titulos:</span>
-        
-      <div className="flex ">
-      <input
-      className="  w-[600px] text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-        type="text"
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
-        placeholder="Title"
-      />
+        <h1 className="font-extrabold text-[#251B45] text-3xl">Criação de Relatório</h1>
       </div>
-      <span>Topicos:</span>
-      <div className="">
-       
+
+      <button className="bg-[#0CCA98] flex">
+        Modelo de Relatório</button>
+       <h1 className="font-extrabold text-[#251B45] text-1xl">Novo Tópico</h1>
+      <form onSubmit={handleSubmit}>
+      <h1 className="font-extrabold text-[#251B45] text-3xl pt-[2%] pb-[1%]">Titulo do Tópico </h1>
+        <input
+          type="text"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+          placeholder="ex: Título: Primeira avaliação comportamental"
+          className="border border-gray-300 rounded-xl bg-gray-50 px-4 py-2 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block w-full sm:w-96 "
+
+        />
+        <h1 className="font-extrabold text-[#251B45] text-3xl pt-[2%] pb-[1%]">Descrição/Tópico</h1>
         <textarea
-        className=" h-[200px] w-[600px] rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-        name="topic"
-        value={formData.topic}
-        onChange={handleChange}
-        placeholder="Topic"></textarea>
-      </div>
-      
-      </div>
-     
-    
-      {topics.map((topic, index,title) => (
-        <div key={index}>
-          
-          <button className="text-white font-bold bg-[#ca0c0c] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2" onClick={() => handleRemoveTopic(index)}>Remover topico:  [ {index+1} ] titulo: [ {topic.title} ] e topico: [ {topic.topic} ] </button>
-        </div>
-      ))}
-       
-      
-    </div>
- 
+          type="text"
+          value={topico}
+          onChange={(e) => setTopico(e.target.value)}
+          placeholder="Tópico"
+          className="border border-gray-300 rounded-xl bg-gray-50 px-4 py-2 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block resize "
 
+        />
+        <button className="bg-blue-500 text-white font-bold rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2 mt-4" type="submit">{editingIndex !== null ? 'Editar' : 'Adicionar'}</button>
+      </form>
+<div className="pt-[3%]">
+      <span className="font-extrabold text-[#251B45] text-3xl "> {relatorios[0] !==  relatorios[1] ? 'Topicos salvos listado:': 'Não há topicos salvos!' }</span>
       </div>
-  
-  
-  );
+      <div className="grid grid-cols-3 pt-[2%]">
+        {relatorios.map((relatorio, index) => (
+          <div className="bg-white p-2 rounded-lg shadow-lg" key={index}>
+            <h3 className="font-extrabold">{index+1}-{relatorio.titulo}</h3>
+            <p> {relatorio.topico}</p>
+            <button  className="bg-blue-500 text-white font-bold rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2 mt-4" onClick={() => handleEdit(index)}>Editar</button>
+            <button className="bg-red-400 text-white font-bold rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2 mt-4" onClick={() => handleDelete(index)}>Deletar</button>
+          </div>
+        ))}
+      </div>
+      <div>
+      <button
+      className="bg-green-400 text-white font-bold rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2 mt-4"
+      onClick={saveRelatorios}
+    >
+      Salvar Relatorio
+    </button>
+      </div>
+    </div>
+ );
 }
 
+export default App;

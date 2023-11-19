@@ -21,7 +21,7 @@ export default function sideBar() {
 				<div
 					className={`${
 						open ? "w-72" : "w-20"
-					} duration-300 bg-[#251B45] h-screen relative pt-10 p-2`}>
+					} duration-300 bg-[#251B45] h-full relative pt-10 p-2`}>
 					<img
 						onClick={() => setOpen(!open)}
 						src="next.svg"
