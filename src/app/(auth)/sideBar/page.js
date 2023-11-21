@@ -5,8 +5,9 @@ import { Fragment, useState } from "react";
 export default function sideBar() {
 	const Menu = [
 		{ title: "Dashboard", src: "quadradino", link: "/general" },
-		{ title: "Gerenciar Alunos", src: "chapeuzinho", link: "/cadastroAluno" },
-		{ title: "Gerenciar Relatórios", src: "docs", link: "/cadastroRelatorios" },
+		{ title: "Cadastro de Alunos", src: "chapeuzinho", link: "/cadastroAluno" },
+		{ title: "Criação de Relatórios", src: "docs", link: "/cadastroRelatorios" },
+		{ title: "Lista de Relatórios", src: "docs", link: "/listaRelatorios" },
 		{ title: "FAQ", src: "question", link: "faq" },
 		{ user: "Juliano Lavandoski", src: "bonequinho" },
 	];
@@ -43,7 +44,7 @@ export default function sideBar() {
 								href={menu.link}
 								key={index}
 								className="text-sm flex items-center gap-x-2 cursor-pointer py-[6%] px-[10%] rounded-xl hover:bg-[#0CCA98] ">
-								<img className="px-2" src={`/${menu.src}.svg`} />
+								<img className="px-2  text-white" src={`/${menu.src}.svg`} />
 								<span className={`${!open && "hidden"} text-white`}>
 									{menu.user}
 								</span>

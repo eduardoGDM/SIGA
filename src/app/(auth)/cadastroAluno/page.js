@@ -10,12 +10,8 @@ import {
 	updateDoc
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-
 const Swal = require("sweetalert2");
-
-
-
-export default function CadastroAluno() {
+ export default function CadastroAluno() {
 	const [newNome, setNewNome] = useState("");
   	const [newIdade, setNewIdade] = useState();
 	const [newTelefone, setNewTelefone] = useState();
@@ -73,9 +69,13 @@ export default function CadastroAluno() {
 	  getAlunos();
 	  
 	}, []);
-console.log(alunos)
-	return (
 
+
+	
+console.log(alunos)
+
+	return (
+	
 		
 		<div className="pl-[4%] pt-[4%]">
 			<div>
@@ -111,7 +111,7 @@ console.log(alunos)
 		  <input className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" type="text" value={newPai} placeholder="Pai" onChange={(event) => {setNewPai(event.target.value)}}/>
 		  <span>Mãe:</span>
 		  <input className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]" type="text"  value={newMae}placeholder="Mae" onChange={(event) => {setNewMae(event.target.value)}}/>
-		  <button className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2" type="submit"> Salvar </button>
+		  <button className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2" type="submit" > SALVAR PARA PDF </button>
 		  </div>
 		  </form>
 		  <span>Alunos Cadastrados:</span>
@@ -126,107 +126,21 @@ console.log(alunos)
 			  <h1>Serie: {aluno.serie}ª</h1>
 			  <h1>Mae: {aluno.mae}</h1>
 			  <h1>Pai: {aluno.pai}</h1>
-			  
+			 
+
+			  <button className="text-white font-bold bg-[#ca0c0c] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-[6%] " onClick={(e)=>relatoriosPDF(alunos)}>Criar Relatorio </button>
 			  <button className="text-white font-bold bg-[#ca0c0c] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-[6%] " onClick={() => {deleteAluno(aluno.id)}}>Excluir Aluno </button>
+			  
+
 			   <button onClick={() => {
 				updateAluno(aluno.id, aluno.nome);
-			  }}>Increase </button>
+			  }}>Oi </button>
 			</div>
 		  })}
 		</div>
 		</div>
+		
 	  );
 		
-// 	return (
-// 		<div className="">
-// 			<div className="pl-[14%] pt-[10%] ">
-// 				<div className="">
-// 					<img
-// 						className="bg-[#D9D9D9] rounded-full p-[7%]"
-// 						src="bonequinho.svg"
-// 					/>
-// 					<div className="flex flex-wrap pt-[3%] px-[2%]">
-// 						<h1 className="text-[rgb(37,27,69)] font-bold text-3xl ">Jujuba</h1>
-// 						<span className="text-[#828282] whitespace-nowrap text-1xl">
-// 							Visualize e edite as informações sobre o aluno
-// 						</span>
-// 					</div>
-// 				</div>
-// 			</div>
 
-// 			<div className="pl-[14%] pt-[5%] font-bold text-[rgb(37,27,69)] grid grid-cols-2 gap-x-3">
-// 				<form onSubmit={gravar}>
-// 					<span className="py-[2%]">Nome Completo</span>
-// 					<input
-// 						type="text"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setNome(event.target.value)}
-// 						value={nome}></input>
-// 					<span className="py-[%]">Data de Nascimento</span>
-// 					<input
-// 						type="date"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setNascimento(event.target.value)}
-// 						value={nascimento}></input>
-// 					<span className="py-[2%]">Telefone</span>
-// 					<input
-// 						type="number"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setTelefone(event.target.value)}
-// 						value={telefone}></input>
-// 					<span className="py-[2%]">Série</span>
-// 					<input
-// 						type="number"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setSerie(event.target.value)}
-// 						value={serie}></input>
-// 					<span className="py-[2%]">Turno</span>
-// 					<input
-// 						type="text"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setTurno(event.target.value)}
-// 						value={turno}></input>
-// 					<span className="py-[2%]">Filiação: Mãe</span>
-// 					<input
-// 						type="text"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setFiliacaoM(event.target.value)}
-// 						value={filiacaoM}></input>
-// 					<span className="py-[2%]">Filiação: Pai</span>
-// 					<input
-// 						type="text"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setFiliacaoP(event.target.value)}
-// 						value={filiacaoP}></input>
-// 					<span className="py-[2%]">Matrícula</span>
-// 					<input
-// 						type="number"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setMatricula(event.target.value)}
-// 						value={matricula}></input>
-// 					<span className="py-[2%]">Repetência</span>
-// 					<input
-// 						type="number"
-// 						className=" text-center rounded-xl bg-gray-50 border border-gray-300 text-gray-900 text-sm  focus:ring-blue-500 focus:border-blue-500 block px-[5%] py-[1%] mb-[2%]"
-// 						placeholder=""
-// 						onChange={(event) => setRepetencia(event.target.value)}
-// 						value={repetencia}></input>
-// 					<button
-// 						className="text-white font-bold bg-[#0CCA98] rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2"
-// 						type="submit">
-// 						Cadastrar
-// 					</button>
-// 				</form>
-// 			</div>
-// 		</div>
-// 	);
-// }
 		}
