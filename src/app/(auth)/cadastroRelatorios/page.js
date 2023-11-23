@@ -1,6 +1,6 @@
 "use client";
 
-import relatoriosPDF from "@/app/reports/relatorios";
+import relatoriosPDF from '@/app/reports/relatorios';
 import { db } from "@/services/firebaseConfig";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -14,12 +14,15 @@ function App() {
  const [editingIndex, setEditingIndex] = useState(null);
  const alunosCollectionRef = collection(db, "aluno");
  const [alunos, setAlunos] = useState([]);
- const [selectedAluno, setSelectedAluno] = useState(null);
+ const [selectedAluno, setSelectedAluno] = useState([]);
+
 
  function handleSelectAluno(aluno) {
-  setSelectedAluno(aluno);
+  
+  setSelectedAluno(aluno)
+ 
+  
 }
-
  const handleSubmit = (e) => {
     e.preventDefault();
     if (editingIndex !== null) {
@@ -33,6 +36,13 @@ function App() {
     setTitulo('');
     setTopico('');
     setTituloDocumento('');
+    
+    const data = {
+      selectedAluno,
+      relatorios,
+    };
+   
+   
  };
  const handleEdit = (index) => {
     setTituloDocumento(relatorios[index].tituloDocumento);
@@ -49,10 +59,8 @@ function App() {
 
  const saveRelatorios = async (alunos) => {
    try {
-      const relatoriosRef = collection(db, `aluno`);
-      const subcollectionRef = collection(relatoriosRef, "H6LEWPZ81VsIJwNk0ebW");
-
-      const newDocumentRef = doc(subcollectionRef);
+      const relatoriosRef = collection(db, `relatorios`);
+      const newDocumentRef = doc(relatoriosRef);
       const relatoriosObject = { relatorios };
       await setDoc(newDocumentRef,relatoriosObject);
       Swal.fire({
@@ -67,8 +75,9 @@ function App() {
    }
   };
 
- console.log(relatorios)
 
+
+ 
  useEffect(() => {
   const getAlunos = async () => {
   const data = await getDocs(alunosCollectionRef);
@@ -77,9 +86,21 @@ function App() {
   
   getAlunos();
 }, []);
-console.log(selectedAluno)
+
+
+
  return (
   <MagicMotion>
+   <div>
+
+
+
+  
+  
+
+</div>
+    
+    <div>
     <div className="pl-[3%] pt-[2%]">
       <div>
         <h1 className="font-extrabold text-[#251B45] text-3xl">Criação de Relatório</h1>
@@ -126,13 +147,15 @@ console.log(selectedAluno)
 <div className="pt-[3%]">
       <span className="font-extrabold text-[#251B45] text-3xl "> {relatorios[0] !==  relatorios[1] ? 'Topicos salvos listado:': 'Não há topicos salvos!' }</span>
       </div>
-      <div className="grid grid-cols-3 pt-[2%]">
+      <div className="grid  pt-[2%]">
         {relatorios.map((relatorio, index) => (
           <div className="grid grid-cols-3 pt-[2%]" key={index}>
             <h3 className="font-extrabold">{index+1}-{relatorio.titulo}</h3>
             <p> {relatorio.topico}</p>
+            <div className="flex">
             <button  className="bg-blue-500 text-white font-bold rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2 mt-4" onClick={() => handleEdit(index)}>Editar</button>
             <button className="bg-red-400 text-white font-bold rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2 mt-4" onClick={() => handleDelete(index)}>Deletar</button>
+            </div>
           </div>
         ))}
       </div>
@@ -150,7 +173,7 @@ console.log(selectedAluno)
       <button
       
       className="bg-[#ca0c0c] text-[#251B45] font-semibold rounded-lg text-1xl px-2 py-1 text-center inline-flex items-center mr-2 mb-2 mt-4"
-      onClick={(e)=>relatoriosPDF(relatorios)}
+      onClick={(e)=>relatoriosPDF(selectedAluno,relatorios)}
     >
      
       Emitir Relatorio
@@ -159,22 +182,32 @@ console.log(selectedAluno)
       </div>
      
     </div>
-    <div className="">
-    <h1>Alunos cadastrados no sistema!</h1>
-    <h2>Selecione o aluno para anexar  ao relatorio!</h2>
-    {alunos.map((aluno) => {
+
+    <div>
+     {alunos.map((aluno) => {
 			return  <div
       key={aluno.matricula}
-      className="bg-white py-[2%]  rounded shadow-md"
+      className=" py-[2%]  rounded shadow-md"
       onClick={() => handleSelectAluno(aluno)}
     >
-      <h1>Name: {aluno.nome}</h1>
-      <h1>Matricula: {aluno.matricula}</h1>
-     
+      <div className="">
+      <button  className="pl-[1%] text-[#0CCA98] ">Name: {aluno.nome}</button>
+      <button className="pl-[1%]  text-[#0CCA98]">Matricula: {aluno.matricula}</button>
+      </div>
     
     </div>
-		  })}
-      </div>
+		  })}  
+    </div>
+    
+    <div>
+   
+      
+    </div>
+    
+				
+			
+    
+        </div>
     </MagicMotion>
  );
  

@@ -59,7 +59,7 @@ export default function sideBar() {
 						src="logout 1.svg"
 					/>
 				</div>
-				<div></div>
+				
 			</div>
 		</Fragment>
 	);
