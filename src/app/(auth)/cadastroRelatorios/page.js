@@ -20,7 +20,8 @@ function App() {
  function handleSelectAluno(aluno) {
   
   setSelectedAluno(aluno)
- 
+  alert("Aluno selecionado")
+ console.log(selectedAluno)
   
 }
  const handleSubmit = (e) => {
@@ -173,7 +174,7 @@ function App() {
       <button
       
       className="bg-[#ca0c0c] text-[#251B45] font-semibold rounded-lg text-1xl px-2 py-1 text-center inline-flex items-center mr-2 mb-2 mt-4"
-      onClick={(e)=>relatoriosPDF(selectedAluno,relatorios)}
+      onClick={(e)=>relatoriosPDF(relatorios,selectedAluno)}
     >
      
       Emitir Relatorio

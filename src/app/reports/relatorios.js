@@ -3,11 +3,10 @@ import pdfMake from 'pdfmake/build/pdfMake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 function relatoriosPDF(relatorios, selectedAluno) {
-    const relatoriosArray = Object.entries(relatorios).map(([nome, valor]) => ({ [nome]: valor }));
-
     const alunosArray = Object.entries(selectedAluno).map(([nome, valor]) => ({ [nome]: valor }));
 
-    console.log(relatoriosArray)
+    const relatoriosArray = Object.entries(relatorios).map(([nome, valor]) => ({ [nome]: valor }));
+//relatoriosArray em branco
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
     const reportTitle = [
         {
@@ -18,44 +17,53 @@ function relatoriosPDF(relatorios, selectedAluno) {
         }
     ];
    
+    const dados = relatorios.map((relatorios)=> {
+        return [
+            { text: relatorios.titulo, fontSize: 10, },
+            { text: relatorios.topico, fontSize: 10,  },
 
+    ]
+    })
+    const dadosAluno = alunosArray.map((alunosArray)=> {
+        return [
+            { text: alunosArray.nome, fontSize: 10  },
+            { text: alunosArray.idade, fontSize: 10, },
+            { text: alunosArray.matricula, fontSize: 10  },
+           
+    ]
+    })
     // Conteúdo do relatório
-    const content = [
-        
-        { text: 'Relatórios:', fontSize: 12, margin: [0, 10, 0, 0] },
-        relatoriosArray.map(relatorio => [
-            { text: `nome: ${relatorio.nome}`, fontSize: 10, margin: [0, 2, 0, 2] },
-            { text: `Idade: ${relatorio.idade}`, fontSize: 10, margin: [0, 2, 0, 2] },
-            { text: `serie: ${relatorio.serie}`, fontSize: 10, margin: [0, 2, 0, 2] },
-            { text: `turno: ${relatorio.turno}`, fontSize: 10, margin: [0, 2, 0, 2] },
-            { text: `pai: ${relatorio.pai}`, fontSize: 10, margin: [0, 2, 0, 2] },
-            { text: `mae: ${relatorio.mae}`, fontSize: 10, margin: [0, 2, 0, 2] },
-
-
-        ]),
-    ];
+    // const details = [
+    //     { text: 'Relatórios:', fontSize: 12, margin: [0, 10, 0, 0] },
+    //     relatoriosArray.map(relatorio => [
+    //         { text: `nome: ${relatorio.titulo}`, fontSize: 10, margin: [0, 2, 0, 2] },
+    //         { text: `Idade: ${relatorio.topico}`, fontSize: 10, margin: [0, 2, 0, 2] },
+           
+    //     ]),
+    // ];
 
     const details = [
         {
             table: {
-                headerRows: 1,
-                widths: ['*', '*','*'],
                 body: [
-                    [{ text: 'Título', style: 'tableHeader', fontSize: 10 }],
-                    ...alunosArray.map(aluno => [
-                        { text: `Título: ${aluno.id}`, fontSize: 10, margin: [0, 2, 0, 2] },
-                        { text: `Aluno: ${aluno.nome}`, fontSize: 10, margin: [0, 2, 0, 2] },
-                        { text: `Idade: ${aluno.idade}`, fontSize: 10, margin: [0, 2, 0, 2] },
-
-                    ]),
+                    [
+                        { text: 'Titulo ', fontSize: 10 },
+                        { text: 'Topico', fontSize: 10 },
+                        { text: 'matricula', fontSize: 10 },
+                       
+                       
+                    ],
+                    ...dadosAluno,
+                    //...dados
+                    
                 ]
             },
-            layout: 'headerLineOnly'
+           
         }
     ];
 
 
-   function Rodape(currentPage,pageCount){
+   function rodape(currentPage,pageCount){
     return[
         {
             text:currentPage + '/' + pageCount,
@@ -70,15 +78,10 @@ function relatoriosPDF(relatorios, selectedAluno) {
         pageSize: 'A4',
         pageMargins: [15, 50, 15, 40],
         header: [reportTitle],
-        content: [content],
-        footer: Rodape,
+        content: [details],
+        footer: rodape,
         styles: {
-            tableHeader: {
-                bold: true,
-                fontSize: 10,
-                alignment: 'left',
-                color: 'black',
-            }
+           
         },
     }
     pdfMake.createPdf(docDefinition).download()
