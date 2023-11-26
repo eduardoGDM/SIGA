@@ -2,19 +2,28 @@
 
 import relatoriosPDF from '@/app/reports/relatorios';
 import { db } from "@/services/firebaseConfig";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, onSnapshot, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { MagicMotion } from "react-magic-motion";
 import Swal from 'sweetalert2';
+
 function App() {
- const [relatorios, setRelatorios] = useState([]);
- const [titulo, setTitulo] = useState('');
+  const [relatorios, setRelatorios] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const storedRelatorios = localStorage.getItem('relatorios');
+      return storedRelatorios ? JSON.parse(storedRelatorios) : [];
+    } else {
+      return [];
+    }
+  });
+  const [titulo, setTitulo] = useState('');
  const [tituloDocumento, setTituloDocumento] = useState('');
  const [topico, setTopico] = useState('');
  const [editingIndex, setEditingIndex] = useState(null);
  const alunosCollectionRef = collection(db, "aluno");
  const [alunos, setAlunos] = useState([]);
  const [selectedAluno, setSelectedAluno] = useState([]);
+ const [relatoriosCollection, setRelatoriosCollection] = useState([]);
 
 
  function handleSelectAluno(aluno) {
@@ -24,6 +33,14 @@ function App() {
  console.log(selectedAluno)
   
 }
+
+useEffect(() => {
+  // Carregar dados do localStorage durante a inicialização no lado do cliente
+  const storedRelatorios = localStorage.getItem('relatorios');
+  if (storedRelatorios) {
+    setRelatorios(JSON.parse(storedRelatorios));
+  }
+}, []);
  const handleSubmit = (e) => {
     e.preventDefault();
     if (editingIndex !== null) {
@@ -32,7 +49,14 @@ function App() {
       setRelatorios(newArray);
       setEditingIndex(null);
     } else {
-      setRelatorios([...relatorios, {tituloDocumento, titulo, topico}]);
+      const newRelatorios = [...relatorios, { tituloDocumento, titulo, topico }];
+      setRelatorios(newRelatorios);
+
+      // Salvar no localStorage apenas no lado do cliente
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('relatorios', JSON.stringify(newRelatorios));
+      }
+
     }
     setTitulo('');
     setTopico('');
@@ -43,6 +67,7 @@ function App() {
       relatorios,
     };
    
+    
    
  };
  const handleEdit = (index) => {
@@ -56,6 +81,8 @@ function App() {
     const newArray = [...relatorios];
     newArray.splice(index, 1);
     setRelatorios(newArray);
+    localStorage.setItem('relatorios', JSON.stringify(newArray));
+
  };
 
  const saveRelatorios = async (alunos) => {
@@ -64,6 +91,9 @@ function App() {
       const newDocumentRef = doc(relatoriosRef);
       const relatoriosObject = { relatorios };
       await setDoc(newDocumentRef,relatoriosObject);
+      localStorage.removeItem('relatorios');
+
+
       Swal.fire({
         title: "Salvo com sucesso!",
         text: "Relatório foi salvo!",
@@ -71,12 +101,12 @@ function App() {
       });
       
    } catch (error) {
+    
       console.error("Erro ao salvar dados: ", error);
       
    }
   };
-
-
+  
 
  
  useEffect(() => {
@@ -88,15 +118,32 @@ function App() {
   getAlunos();
 }, []);
 
+useEffect(() => {
+  const relatoriosCollectionRef = collection(db, 'relatorios');
 
+  const unsubscribe = onSnapshot(relatoriosCollectionRef, (querySnapshot) => {
+    const relatoriosArray = [];
+    querySnapshot.forEach((doc) => {
+      const { id, relatorios, tituloDocumento } = doc.data();
+
+      // Aqui, 'relatorios' é um array de objetos
+      relatoriosArray.push({
+        id,
+        tituloDocumento: relatorios[0]?.tituloDocumento || 'Sem título No Documento',
+        titulo: relatorios[0]?.titulo || 'Sem título',
+        topico: relatorios[0]?.topico || 'Sem tópico',
+      });
+    });
+    setRelatoriosCollection(relatoriosArray);
+  });
+  return () => unsubscribe(); // Desinscrever ao desmontar o componente
+}, []);
+console.log(relatoriosCollection)
 
  return (
   <MagicMotion>
    <div>
 
-
-
-  
   
 
 </div>
@@ -146,7 +193,6 @@ function App() {
         <button className="bg-blue-500 text-white font-bold rounded-lg text-1xl px-5 py-2 text-center inline-flex items-center mr-2 mb-2 mt-4" type="submit">{editingIndex !== null ? 'Editar' : 'Adicionar'}</button>
       </form>
 <div className="pt-[3%]">
-      <span className="font-extrabold text-[#251B45] text-3xl "> {relatorios[0] !==  relatorios[1] ? 'Topicos salvos listado:': 'Não há topicos salvos!' }</span>
       </div>
       <div className="grid  pt-[2%]">
         {relatorios.map((relatorio, index) => (
@@ -183,7 +229,9 @@ function App() {
       </div>
      
     </div>
-
+<div>
+  
+</div>
     <div>
      {alunos.map((aluno) => {
 			return  <div
@@ -201,7 +249,7 @@ function App() {
     </div>
     
     <div>
-   
+      
       
     </div>
     
